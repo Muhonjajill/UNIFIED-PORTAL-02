@@ -78,6 +78,8 @@ urlpatterns = [
     path('categories/edit/<int:category_id>/', views.edit_problem_category, name='edit_problem_category'),
     path('categories/delete/<int:category_id>/', views.delete_problem_category, name='delete_problem_category'),
 
+    path('tickets/status/<str:status>/', views.tickets_by_status, name='ticket_by_status'),
+
     # Master Data
     path('master-data/customers/', views.customers, name='customers'),
     path("customers/create/", views.create_customer, name="create_customer"),

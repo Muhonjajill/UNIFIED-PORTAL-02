@@ -1236,6 +1236,14 @@ def delete_ticket(request, ticket_id):
 def ticket_statuses(request):
     return render(request, 'core/helpdesk/ticket_statuses.html')
 
+
+def tickets_by_status(request, status):
+    tickets = Ticket.objects.filter(status__iexact=status.replace('-', '_'))
+    return render(request, 'core/helpdesk/ticket_by_status.html', {
+        'status': status.title().replace('-', ' '),
+        'tickets': tickets
+    })
+
 def problem_category(request):
     print(">>> problem_category view reached")
     query = request.GET.get('search', '')

@@ -76,6 +76,10 @@
   background-color: #ffc107;
   color: #212529;
 }
+.badge-info{
+  background-color: #17a2b8;
+  
+}
 
 .badge-closed {
   background-color: #6c757d;

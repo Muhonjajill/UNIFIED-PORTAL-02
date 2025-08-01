@@ -25,20 +25,26 @@
       </thead>
       <tbody>
         <tr>
-          <td><span class="badge badge-open">Open</span></td>
+          <td><a href="{% url 'ticket_by_status' 'open' %}"><span class="badge badge-open">Open</span></a></td>
           <td>Ticket is currently open and awaiting action.</td>
           <td style="color: green;">Green</td>
         </tr>
         <tr>
-          <td><span class="badge badge-pending">Pending</span></td>
+          <td><a href="{% url 'ticket_by_status' 'in-progress' %}"><span class="badge badge-pending">In Progress</span></a></td>
           <td>Ticket is on hold awaiting more information.</td>
           <td style="color: orange;">Orange</td>
         </tr>
         <tr>
-          <td><span class="badge badge-closed">Closed</span></td>
+          <td><a href="{% url 'ticket_by_status' 'resolved' %}"><span class="badge badge-info">Resolved</span></a></td>
+          <td>Ticket issue has been resolved.</td>
+          <td style="color: blue;">Blue</td>
+        </tr>
+        <tr>
+          <td><a href="{% url 'ticket_by_status' 'closed' %}"><span class="badge badge-closed">Closed</span></a></td>
           <td>Ticket has been resolved or closed.</td>
           <td style="color: grey;">Grey</td>
         </tr>
+
       </tbody>
     </table>
   </div>
