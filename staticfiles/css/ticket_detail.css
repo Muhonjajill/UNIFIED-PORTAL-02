@@ -1,0 +1,218 @@
+.ticket-detail-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+}
+
+.ticket-card {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 800px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.ticket-card h2 {
+  font-size: 1.75em;
+  color: #007bff;
+  margin-bottom: 25px;
+  text-wrap: balance;
+}
+
+.ticket-info div {
+  margin-bottom: 15px;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.ticket-info strong {
+  color: #555;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.description {
+  margin-top: 5px;
+  padding-left: 10px;
+  color: #444;
+  border-left: 3px solid #007bff1c;
+}
+
+/* Badge styles */
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.badge-open { background-color: #28a745; color: white; }
+.badge-in_progress { background-color: #ffc107; color: #212529; }
+.badge-resolved { background-color: #17a2b8; color: white; }
+.badge-closed { background-color: #6c757d; color: white; }
+
+.badge-low { background-color: #17a2b8; color: white; }
+.badge-medium { background-color: #ffc107; color: #212529; }
+.badge-high { background-color: #dc3545; color: white; }
+.badge-urgent { background-color: #bd2130; color: white; }
+
+/* Back button */
+.btn-back {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+  background-color: #0056b3;
+}
+.btn-success {
+  background-color: #28a745;  /* Green background */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;  
+  transform: scale(1.05);  
+}
+
+.btn-success:focus {
+  outline: none; 
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);  
+}
+/* Modal enhancements */
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  animation: slideFadeIn 0.4s ease;
+  border: none;
+}
+
+.modal-header {
+  background-color: #f1f5f9;
+  border-bottom: 1px solid #dee2e6;
+  padding: 20px 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.modal-body {
+  padding: 24px;
+  background-color: #fff;
+  font-size: 1rem;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.modal textarea,
+.modal input[type="text"],
+.modal select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.modal textarea:focus,
+.modal input[type="text"]:focus,
+.modal select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}
+
+/* Modal animation */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Buttons inside modal */
+.modal .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.modal .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.modal .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.modal .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .ticket-info strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .ticket-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ticket-card h2 {
+    font-size: 1.4em;
+  }
+
+  .ticket-info {
+    font-size: 0.95em;
+  }
+
+  .btn-back {
+    width: 100%;
+    text-align: center;
+  }
+}
