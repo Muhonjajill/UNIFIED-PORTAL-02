@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const otpModal = document.getElementById('otpModal');
   const otpForm = document.getElementById('otpForm');
   const otpMessage = document.getElementById('otpMessage');
+  const loader = document.getElementById('loader'); // ✅ Define loader here
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -22,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (data.status === 'otp_sent') {
-      otpModal.style.display = 'block';
+      console.log("OTP modal triggered");
+      otpModal.style.display = 'flex';
     } else {
       alert(data.message || 'Login failed');
     }

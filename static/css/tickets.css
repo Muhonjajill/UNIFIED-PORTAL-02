@@ -80,16 +80,16 @@
   color: white;
 }
 .badge-in_progress { background-color: #ffc107; color: #212529; }
-.badge-resolved { background-color: #17a2b8; }
+.badge-resolved { background-color: #87f37d; }
 
-.badge-open { background-color: #28a745; }
+.badge-open { background-color: #d35028; }
 .badge-closed { background-color: #6c757d; }
 .badge-pending { background-color: #ffc107; color: #212529; }
 
-.badge-high { background-color: #dc3545; }
+.badge-high { background-color: #dc7835; }
 .badge-medium { background-color: #ffc107; color: #212529; }
 .badge-low { background-color: #17a2b8; }
-.badge-critical {background-color: aquamarine; color: #212529 ;}
+.badge-critical {background-color: rgb(238, 54, 54); color: #212529 ;}
 
 .view-link {
   color: var(--primary-color);
