@@ -27,20 +27,30 @@ body {
 
 /* Left branding panel */
 .login-wrapper .left-panel {
-  background: linear-gradient(to bottom right, #ffffff, #e74c3c, #3498db);
+  /*background: linear-gradient(135deg,
+  /*#ffffff 0%,      /* clean white start */
+  /*#fbe4e4 30%,     /* gentle red blush */
+  /*#e8433f 45%,     /* rich corporate red */
+  /*#a5b8e1 70%,     /* soft steel blue bridge */
+  /*#123692 100%      bold deep blue anchor */
+/*);*/
+
+background: linear-gradient(to bottom right, #ffffff, #e74c3c, #3498db); 
 
 
-  color: white;
+  color: #f8f1f1;
   width: 50%;
   padding: 40px 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  text-align: center;
 }
 
 .left-panel img {
   width: 150px;
   height: auto;
+  margin-bottom: 20px;
 }
 
 .left-panel h1 {

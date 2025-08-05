@@ -1041,7 +1041,13 @@ def tickets(request):
     ).order_by('-created_at')
 
     if status_filter:
-        tickets = tickets.filter(status=status_filter)
+        if status_filter == 'escalated':
+            tickets = tickets.filter(is_escalated=True)
+        else:
+            tickets = tickets.filter(status=status_filter)
+
+
+        #tickets = tickets.filter(status=status_filter)
 
     #pagination
     paginator = Paginator(tickets, 10)
@@ -1224,6 +1230,33 @@ def resolve_ticket_view(request, ticket_id):
     # If the user doesn't have permission
     messages.error(request, 'You do not have permission to resolve this ticket.')
     return render(request, 'core/helpdesk/permission_denied.html')
+
+#ticket escalation
+@login_required
+def escalate_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    # Optional: Restrict who can escalate
+    if not request.user.is_staff and not request.user.groups.filter(name="Escalators").exists():
+        messages.error(request, "You are not authorized to escalate this ticket.")
+        return redirect('ticket_detail', ticket_id=ticket.id)
+
+    if request.method == 'POST':
+        reason = request.POST.get('escalated_reason')
+        if not reason:
+            messages.error(request, "Escalation reason is required.")
+            return redirect('ticket_detail', ticket_id=ticket.id)
+
+        ticket.is_escalated = True
+        ticket.escalated_at = timezone.now()
+        ticket.escalated_by = request.user
+        ticket.escalation_reason = reason
+        ticket.save()
+
+        messages.success(request, f"Ticket #{ticket.id} has been escalated.")
+        return redirect('ticket_detail', ticket_id=ticket.id)
+
+    return redirect('ticket_detail', ticket_id=ticket.id)
 
 
 @user_passes_test(is_director)

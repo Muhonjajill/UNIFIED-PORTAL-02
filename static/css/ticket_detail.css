@@ -97,6 +97,27 @@
   outline: none; 
   box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);  
 }
+/* New: Ticket Info Layout Styling */
+.ticket-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ticket-info > div {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.ticket-info > div:nth-child(even) {
+  border-left: 1px solid #e0e0e0;
+  padding-left: 1rem;
+}
+
 /* Responsive behavior */
 @media (max-width: 768px) {
   .ticket-info strong {
@@ -123,3 +144,4 @@
     text-align: center;
   }
 }
+

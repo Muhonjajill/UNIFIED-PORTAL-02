@@ -48,7 +48,7 @@ urlpatterns = [
     path('files-management/', views.file_management_dashboard, name='dashboard'),
     path('file-categories/', manage_file_categories, name='manage_file_categories'),
 
-     path('search/', views.search, name='search'),
+    path('search/', views.search, name='search'),
 
     path('profile/', views.profile_view, name='profile_view'),
     path('settings/', SettingsView.as_view(), name='settings'),
@@ -103,6 +103,9 @@ urlpatterns = [
 
     path('master-data/zones/', views.zones, name='zones'),
     path('zones/delete/<int:zone_id>/', views.delete_zone, name='delete_zone'),
+
+    #ticket resolved
+    path('tickets/<int:ticket_id>/escalate/', views.escalate_ticket, name='escalate_ticket'),
 
     # Reports
     path('reports/general/', views.reports, name='reports'),

@@ -30,15 +30,25 @@
       {% if ticket.resolution %}
         <div><strong>Resolution Statement:</strong><br><p class="description">{{ ticket.resolution }}</p></div>
       {% endif %}
+
+      {% if ticket.is_escalated %}
+        <div class="alert alert-warning mt-3 p-3 rounded">
+          <strong>🚨 Escalated</strong><br>
+          <strong>By:</strong> {{ ticket.escalated_by }}<br>
+          <strong>At:</strong> {{ ticket.escalated_at|date:"Y-m-d H:i" }}<br>
+          <strong>Reason:</strong> <em>{{ ticket.escalation_reason }}</em>
+        </div>
+      {% endif %}
+
     </div>
 
     <div class="mt-4">
       {% if is_admin or is_editor %}
         <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTicketModal">✏️ Edit Ticket</button>
 
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#resolveTicketModal">
-            ✅ Resolve Ticket
-          </button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#resolveTicketModal">✅ Resolve Ticket</button>
+
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#escalateTicketModal">🚨 Escalate Ticket</button>
 
       {% elif can_resolve %}
        
@@ -163,6 +173,32 @@
   </div>
 </div>
 {% endif %}
+
+<!-- Escalate Ticket Modal -->
+<div class="modal fade" id="escalateTicketModal" tabindex="-1" aria-labelledby="escalateTicketModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="{% url 'escalate_ticket' ticket.id %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="escalateTicketModalLabel">Escalate Ticket #{{ ticket.id }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="escalated_reason">Reason for Escalation</label>
+            <textarea class="form-control" id="escalated_reason" name="escalated_reason" rows="5" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">🚨 Escalate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <!-- Modal: Resolve Ticket with Resolution -->
 <div class="modal fade" id="resolveTicketModal" tabindex="-1" aria-labelledby="resolveTicketModalLabel" aria-hidden="true">

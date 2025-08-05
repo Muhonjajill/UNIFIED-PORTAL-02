@@ -101,6 +101,7 @@ body {
   position: relative;
   /*transition: transform var(--transition), box-shadow var(--transition);*/
   transition: box-shadow 0.3s ease, transform 0.2s ease;
+  min-height: 250px;
 }
 .chart-card:hover {
   /*transform: translateY(-6px);

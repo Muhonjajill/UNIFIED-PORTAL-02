@@ -201,6 +201,16 @@ class Ticket(models.Model):
     resolved_at = models.DateTimeField(null=True, blank=True)
     comment_summary = models.TextField(blank=True, null=True)
 
+    is_escalated = models.BooleanField(default=False)
+    escalated_at = models.DateTimeField(null=True, blank=True)
+    escalated_by = models.ForeignKey(
+        User, null=True, blank=True, related_name='escalated_tickets', on_delete=models.SET_NULL
+    )
+    escalation_reason = models.TextField(null=True, blank=True)
+
+    # Optional: to escalate to another user
+    # escalated_to = models.ForeignKey(User, null=True, blank=True, related_name='tickets_escalated_to', on_delete=models.SET_NULL)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

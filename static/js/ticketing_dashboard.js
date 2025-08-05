@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
         datasets: [{
           label: 'Tickets',
           data: statusCounts,
-          backgroundColor: ['#007bff', '#ffc107', '#28a745'],
+          backgroundColor: ['#e61d16ff', '#068de7ff', '#28a745', '#fcba04ff'],
           borderRadius: 5,
           barThickness: 40
         }]
