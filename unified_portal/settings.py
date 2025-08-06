@@ -103,6 +103,13 @@ EMAIL_HOST_PASSWORD = 'vikt ydrj drzv gemz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
+ESCALATION_LEVEL_EMAILS = {
+    'Tier 1': ('jillmuhonja@gmail.com', EMAIL_HOST_USER),
+    'Tier 2': ('godblessodhiambo@gmail.com',EMAIL_HOST_USER),
+    'Tier 3': ('jillyjill762@gmail.com',EMAIL_HOST_USER),
+    'Tier 4': ('godblessodhiambo@gmail.com',EMAIL_HOST_USER),
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

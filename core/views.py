@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.shortcuts import render, get_list_or_404, redirect
+from traitlets import Instance
 
 from core.priority_rules import determine_priority
-from .models import File, FileAccessLog
+from .models import EscalationHistory, File, FileAccessLog
 from django.http import FileResponse, JsonResponse, HttpResponse
-from .forms import FileUploadForm, ProblemCategoryForm, TicketForm
+from .forms import EscalationNoteForm, FileUploadForm, ProblemCategoryForm, TicketForm
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.db.models import Count, Q
 from django.utils.timezone import now
@@ -1045,9 +1047,13 @@ def tickets(request):
             tickets = tickets.filter(is_escalated=True)
         else:
             tickets = tickets.filter(status=status_filter)
+    """if status_filter:
+        if status_filter == 'escalated':
+            tickets = tickets.filter(is_escalated=True)
+        else:
+            tickets = tickets.filter(status=status_filter)
 
-
-        #tickets = tickets.filter(status=status_filter)
+    tickets = tickets.filter(status=status_filter)"""
 
     #pagination
     paginator = Paginator(tickets, 10)
@@ -1074,7 +1080,7 @@ def create_ticket(request):
 
             # Auto-determine priority
             ticket.priority = determine_priority(
-                ticket.issue_type,
+                #ticket.issue_type,
                 category_name,
                 ticket.description
             )
@@ -1233,32 +1239,93 @@ def resolve_ticket_view(request, ticket_id):
 
 #ticket escalation
 @login_required
-def escalate_ticket(request, ticket_id):
-    ticket = get_object_or_404(Ticket, pk=ticket_id)
-
-    # Optional: Restrict who can escalate
-    if not request.user.is_staff and not request.user.groups.filter(name="Escalators").exists():
-        messages.error(request, "You are not authorized to escalate this ticket.")
+def escalate_ticket(request, ticket_id): 
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    
+    # Get the current escalation level
+    level_order = [level[0] for level in Ticket.ESCALATION_LEVELS]
+    
+    # Find the current escalation level and the next level
+    try:
+        current_index = level_order.index(ticket.current_escalation_level) if ticket.current_escalation_level else -1
+        next_level = level_order[current_index + 1]  # Next level
+    except IndexError:
+        messages.warning(request, "Already at the highest escalation level.")
         return redirect('ticket_detail', ticket_id=ticket.id)
-
+    
     if request.method == 'POST':
-        reason = request.POST.get('escalated_reason')
-        if not reason:
-            messages.error(request, "Escalation reason is required.")
+        form = EscalationNoteForm(request.POST)
+        if form.is_valid():
+            print("Form is valid")
+            note = form.cleaned_data['note']
+            print(f"Escalation Note: {note}")  # Debugging line
+            
+            # Log the escalation to history
+            EscalationHistory.objects.create(
+                ticket=ticket,
+                escalated_by=request.user,
+                from_level=ticket.current_escalation_level,
+                to_level=next_level,
+                note=note
+            )
+
+            # Update ticket escalation
+            ticket.current_escalation_level = next_level
+            ticket.is_escalated = True
+            ticket.escalated_at = timezone.now()
+            ticket.escalated_by = request.user
+            ticket.escalation_reason = note  
+            ticket.save()
+
+            
+            send_mail(
+                subject=f"Ticket #{ticket.id} Escalated to {ticket.current_escalation_level}",
+                message=f"""
+                Ticket ID: {ticket.id}
+                Title: {ticket.title}
+                Escalated By: {ticket.escalated_by}
+                Escalation Level: {ticket.current_escalation_level}
+                Reason: {ticket.escalation_reason}
+                
+
+                View Ticket: http://127.0.0.1:8000/tickets/{ticket.id}
+
+                """,
+                from_email="godblessodhiambo@gmail.com",
+                recipient_list=get_email_for_level(next_level),  # Fetch the emails based on the level
+                fail_silently=False,
+            )
+
+            # Optional: Notify a higher-level group (e.g., email or internal notification)
+            # notify_group(next_level, ticket)
+            
+            messages.success(request, f"Ticket has been escalated to {next_level}.")
             return redirect('ticket_detail', ticket_id=ticket.id)
+    else:
+        print("There is a problem")
+        form = EscalationNoteForm()
 
-        ticket.is_escalated = True
-        ticket.escalated_at = timezone.now()
-        ticket.escalated_by = request.user
-        ticket.escalation_reason = reason
-        ticket.save()
+    return render(request, 'core/helpdesk/escalate_ticket.html', {
+        'ticket': ticket,
+        'form': form,
+        'next_level': next_level
+    })
 
-        messages.success(request, f"Ticket #{ticket.id} has been escalated.")
-        return redirect('ticket_detail', ticket_id=ticket.id)
+def get_email_for_level(level):
+    # This function fetches emails based on escalation level from settings.
+    return settings.ESCALATION_LEVEL_EMAILS.get(level, [])
 
-    return redirect('ticket_detail', ticket_id=ticket.id)
-
-
+def notify_group(level, ticket):
+    # Example: Notify the next escalation level via email
+    email_recipient = get_email_for_level(level)  # Define how to get the right email for the group
+    
+    send_mail(
+        f'Ticket #{ticket.id} has been escalated to {level}',
+        f'The ticket with the issue "{ticket.title}" has been escalated to {level}.',
+        settings.DEFAULT_FROM_EMAIL,
+        [email_recipient],
+        fail_silently=False
+    )
 @user_passes_test(is_director)
 def delete_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)

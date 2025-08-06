@@ -1,49 +1,28 @@
-# priority_rules.py
-
 import re
 
+# Fallback priority per problem category
 PRIORITY_MATRIX = {
-    'technical outage': {
-        'software': 'high',
-        'software update': 'low',
-        'maintenance': 'medium',
-        'preventive maintenance': 'low',
-        'hardware error': 'critical',
-        'installation and configuration': 'medium',
-        'network and connection error': 'high',
-        'repair': 'high',
-        'security': 'high',
-        'complaint': 'medium',
-        'other': 'low',
-    },
-    'cybersecurity incident': {
-        'security': 'critical',
-        'software': 'high',
-        'other': 'high',
-    },
-    'client complaint': {
-        'complaint': 'medium',
-        'software': 'low',
-        'hardware error': 'high',
-        'network and connection error': 'medium',
-        'security': 'high',
-        'other': 'low',
-    },
-    'sla breach': {
-        'software': 'medium',
-        'hardware error': 'high',
-        'security': 'high',
-        'other': 'medium',
-    }
+    'software': 'high',
+    'software update': 'low',
+    'maintenance': 'medium',
+    'preventive maintenance': 'low',
+    'hardware error': 'critical',
+    'installation and configuration': 'medium',
+    'network and connection error': 'high',
+    'repair': 'high',
+    'security': 'critical',
+    'complaint': 'medium',
+    'sla breach': 'high',
+    'other': 'low',
 }
 
-# Synonym mapping for flexible matching
+# Synonym mapping
 SYNONYMS = {
     'failure': {'failure', 'crash', 'fault', 'error', 'malfunction', 'hang'},
     'booting': {'booting', 'starting', 'initializing'},
     'not': {'not', 'no', "can't", 'unable', 'fail', 'fails', 'doesn’t', 'isn’t'},
     'working': {'working', 'functioning', 'responding', 'operational'},
-    'printer': {'printer', 'receipt', 'printer'},
+    'printer': {'printer', 'receipt'},
     'jam': {'jam', 'stuck', 'clogged'},
     'unit': {'unit', 'module', 'cassette'},
     'nv': {'nv', 'note', 'validator'},
@@ -62,7 +41,7 @@ SYNONYMS = {
     'connect': {'connect', 'connection', 'link'},
 }
 
-# Define patterns using word sets (flexible order, token-based match)
+# Patterns grouped by priority
 PRIORITY_PATTERNS = {
     'critical': [
         {'note', 'validator', 'printer', 'not', 'coming'},
@@ -156,14 +135,17 @@ PRIORITY_PATTERNS = {
         {'feedback'},
         {'suggestion'},
         {'icon', 'missing'},
+        {'problem', 'icon'},
+        {'issue', 'icon'},
+        {'icon'},
     ]
 }
-
 
 
 def normalize(text):
     """Lowercase and remove punctuation, return word tokens."""
     return re.sub(r'[^\w\s]', ' ', text.lower()).split()
+
 
 def expand_keywords_with_synonyms(word_set):
     """Expand each word in the pattern with its synonyms."""
@@ -172,19 +154,32 @@ def expand_keywords_with_synonyms(word_set):
         expanded |= SYNONYMS.get(word, {word})
     return expanded
 
-def determine_priority(issue_type, problem_category, description=''):
-    issue_type = issue_type.lower().strip()
-    problem_category = problem_category.lower().strip()
-    words = set(normalize(description))  # Convert to set for subset matching
 
-    # Synonym-aware pattern matching
+def determine_priority(problem_category, description=''):
+    problem_category = problem_category.lower().strip()
+    words = set(normalize(description))
+
+    scores = {'critical': 0, 'high': 0, 'medium': 0, 'low': 0}
+
     for level, patterns in PRIORITY_PATTERNS.items():
         for pattern in patterns:
-            if all(
-                any(syn in words for syn in expand_keywords_with_synonyms({token}))
-                for token in pattern
-            ):
+            match_score = sum(
+                1 for token in pattern
+                if any(syn in words for syn in expand_keywords_with_synonyms({token}))
+            )
+            # Score increases for partial matches
+            scores[level] += match_score
+
+            # Full pattern match takes precedence
+            if match_score >= len(pattern):
+                # Optional: add logging
+                # print(f"[Matched full pattern for {level}]: {pattern}")
                 return level
-            
-    # Fallback: Use issue_type + problem_category from the matrix
-    return PRIORITY_MATRIX.get(issue_type, {}).get(problem_category, 'low')
+
+    # Use the level with the highest score
+    best_priority = max(scores, key=scores.get)
+    if scores[best_priority] > 0:
+        return best_priority
+
+    # Fallback to category default
+    return PRIORITY_MATRIX.get(problem_category, 'low')

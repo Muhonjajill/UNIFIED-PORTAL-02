@@ -83,7 +83,7 @@ class TicketForm(forms.ModelForm):
             'terminal': forms.Select(attrs={'class': 'form-control'}),
             #'priority': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
-            'issue_type': forms.Select(attrs={'class': 'form-control'}),  # ✅ added here
+            #'issue_type': forms.Select(attrs={'class': 'form-control'}),  # ✅ added here
         }
 
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=True)  # Make it visible
@@ -178,3 +178,14 @@ class TicketEditForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'resolution': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
+class EscalationNoteForm(forms.Form):
+    note = forms.CharField(
+        label="Escalation Note",
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Add a note for the escalation'
+        }),
+        required=False
+    )

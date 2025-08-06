@@ -60,7 +60,7 @@
 .badge-low { background-color: #17a2b8; color: white; }
 .badge-medium { background-color: #ffc107; color: #212529; }
 .badge-high { background-color: #dc3545; color: white; }
-.badge-urgent { background-color: #bd2130; color: white; }
+.badge-critical { background-color: #bd2130; color: white; }
 
 /* Back button */
 .btn-back {
@@ -97,6 +97,60 @@
   outline: none; 
   box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);  
 }
+
+/* Escalation History Styling */
+
+.card.escalation-history {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.card.escalation-history .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1.25rem;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card.escalation-history .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0;
+    color: #333;
+}
+
+.card.escalation-history .card-body {
+    padding: 1rem 1.25rem;
+}
+
+.escalation-history-item {
+    background-color: #ffffff;
+    border-left: 4px solid #007bff;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.escalation-history-item strong {
+    color: #444;
+}
+
+.escalation-history-item br {
+    margin-bottom: 0.5rem;
+}
+
+.card.escalation-history p {
+    color: #777;
+    font-style: italic;
+}
+
+
 /* New: Ticket Info Layout Styling */
 .ticket-info {
   display: grid;

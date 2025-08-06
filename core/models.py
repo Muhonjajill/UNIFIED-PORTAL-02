@@ -163,14 +163,15 @@ class Ticket(models.Model):
         ('in_progress', 'In Progress'),
         ('resolved', 'Resolved'),
         ('closed', 'Closed'),
+        ('escalated', 'Escalated'), 
     ]
 
-    ISSUE_TYPES = [
+    """ISSUE_TYPES = [
     ('technical outage', 'Technical Outage'),
     ('cybersecurity incident', 'Cybersecurity Incident'),
     ('client complaint', 'Client Complaint'),
     ('sla breach', 'SLA Breach'),
-    ]
+    ]"""
 
     
     PRIORITY_CHOICES = [
@@ -179,9 +180,18 @@ class Ticket(models.Model):
         ('high', 'High'),
         ('critical', 'Critical'),
     ]
+    ESCALATION_LEVELS = [
+        ('Tier 1', 'Tier 1'),
+        ('Tier 2', 'Tier 2'),
+        ('Tier 3', 'Tier 3'),
+        ('Tier 4', 'Tier 4'),
+    ]
+
+
+    
 
     title = models.CharField(max_length=255, null=True)
-    issue_type = models.CharField(max_length=50, choices=ISSUE_TYPES, default='technical outage')
+    #issue_type = models.CharField(max_length=50, choices=ISSUE_TYPES, default='technical outage')
     brts_unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, null=True)
     problem_category = models.ForeignKey(ProblemCategory, on_delete=models.SET_NULL, null=True)
     terminal = models.ForeignKey(Terminal, on_delete=models.CASCADE, null=True, blank=True)
@@ -195,7 +205,7 @@ class Ticket(models.Model):
     responsible = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium', null=True, blank=True)
     resolution = models.TextField(null=True, blank=True)
     resolved_by = models.ForeignKey(User, related_name='resolved_tickets', null=True, blank=True, on_delete=models.SET_NULL)
     resolved_at = models.DateTimeField(null=True, blank=True)
@@ -207,13 +217,16 @@ class Ticket(models.Model):
         User, null=True, blank=True, related_name='escalated_tickets', on_delete=models.SET_NULL
     )
     escalation_reason = models.TextField(null=True, blank=True)
+    current_escalation_level = models.CharField(max_length=20, choices=ESCALATION_LEVELS, blank=True, null=True)
 
     # Optional: to escalate to another user
     # escalated_to = models.ForeignKey(User, null=True, blank=True, related_name='tickets_escalated_to', on_delete=models.SET_NULL)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
+
+
     class Meta:
         permissions = [
             ('can_view_ticket', 'Can view ticket'),
@@ -222,6 +235,22 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.title
+
+class EscalationHistory(models.Model):
+        
+        ESCALATION_LEVELS = [
+            ('Tier 1', 'Tier 1'),
+            ('Tier 2', 'Tier 2'),
+            ('Tier 3', 'Tier 3'),
+            ('Tier 4', 'Tier 4'),
+        ]
+
+        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="escalation_history")
+        escalated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+        from_level = models.CharField(max_length=20, choices=ESCALATION_LEVELS , blank=True, null=True)
+        to_level = models.CharField(max_length=20, choices=ESCALATION_LEVELS )
+        note = models.TextField(blank=True)
+        timestamp = models.DateTimeField(auto_now_add=True)
 
 class TicketComment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='comments')

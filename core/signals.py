@@ -1,9 +1,13 @@
 from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from core.models import File, Profile
+from core.models import EscalationHistory, File, Profile
 from django.core.exceptions import ObjectDoesNotExist
+
+from core.views import escalate_ticket, notify_group
 
 
 @receiver(post_migrate)
@@ -132,3 +136,37 @@ def assign_permissions(user, permissions_list):
     for permission_codename in permissions_list:
         permission = Permission.objects.get(codename=permission_codename)
         user.user_permissions.add(permission)
+
+
+
+@receiver(post_save, sender=EscalationHistory)
+def send_escalation_notification(sender, instance, **kwargs):
+    #handle_escalation(instance)
+    # Get the next group of users to be notified based on the escalation level
+    # (use your existing 'notify_group' function or implement it here)
+    notify_group(instance.to_level, instance.ticket)
+
+    # Fetch email addresses dynamically from settings
+    recipient_list = settings.ESCALATION_LEVEL_EMAILS.get(instance.to_level, [])
+
+    if recipient_list:
+        send_mail(
+            subject=f"Ticket #{instance.ticket.id} has been escalated to {instance.to_level}",
+            message=f"""
+            Ticket ID: {instance.ticket.id}
+            Title: {instance.ticket.title}
+            Escalated By: {instance.escalated_by}
+            Escalation Level: {instance.to_level}
+            Reason: {instance.note}
+
+            View Ticket: http://127.0.0.1:8000/tickets/{instance.ticket.id}
+
+            """,
+            from_email="godblessodhiambo@gmail.com",
+            recipient_list=settings.ESCALATION_LEVEL_EMAILS.get(instance.to_level, []),
+            fail_silently=False,
+        )
+    else:
+        # Handle case when no email group is found for the escalation level
+        print(f"No email group found for escalation level {instance.to_level}")
+
